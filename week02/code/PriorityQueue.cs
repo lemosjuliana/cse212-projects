@@ -1,59 +1,82 @@
 ﻿public class PriorityQueue
 {
-    private List<PriorityItem> _queue = new();
+    // FIFO order while selecting based on priority..
+    private Queue<Person> _queue = new();
 
     /// <summary>
-    /// Add a new value to the queue with an associated priority.  The
-    /// node is always added to the back of the queue regardless of 
-    /// the priority.
+    /// Adds a new person to the queue with a specific number of turns.
+    /// The person is added to the back of the queue.
     /// </summary>
-    /// <param name="value">The value</param>
-    /// <param name="priority">The priority</param>
-    public void Enqueue(string value, int priority)
+    /// <param name="name">The person's name</param>
+    /// <param name="turns">The number of turns they have before removal</param>
+    public void Enqueue(string name, int turns)
     {
-        var newNode = new PriorityItem(value, priority);
-        _queue.Add(newNode);
+        _queue.Enqueue(new Person(name, turns)); 
     }
 
+    /// <summary>
+    /// Removes and returns the person with the highest turns in the queue.
+    /// If multiple people have the same highest turns, the first-added one is removed first.
+    /// </summary>
+    /// <returns>Name of the person leaving the queu</returns>
+    /// <exception cref="InvalidOperationException">Thrown if the queue is empty</exception>
     public string Dequeue()
     {
-        if (_queue.Count == 0) // Verify the queue is not empty
-        {
+        // Prevents an empty queue from being dequeued and throws an exceptio
+        if (_queue.Count == 0)
             throw new InvalidOperationException("The queue is empty.");
-        }
 
-        // Find the index of the item with the highest priority to remove
-        var highPriorityIndex = 0;
-        for (int index = 1; index < _queue.Count - 1; index++)
+        int count = _queue.Count;
+        Person toReturn = null;
+
+        // Iterates through the queue to find the person with the highest turns
+        for (int i = 0; i < count; i++)
         {
-            if (_queue[index].Priority >= _queue[highPriorityIndex].Priority)
-                highPriorityIndex = index;
+            var person = _queue.Dequeue();
+
+            // Selects the first match with the highest turns. Preserves FIFO order
+            if (toReturn == null || person.Turns > toReturn.Turns)
+            {
+                if (toReturn != null)
+                    // Keeps previous items in order
+                    _queue.Enqueue(toReturn); 
+
+                toReturn = person;
+            }
+            else
+            {
+                // re-adds people with lower turns back to the queue
+                _queue.Enqueue(person); 
+            }
         }
 
-        // Remove and return the item with the highest priority
-        var value = _queue[highPriorityIndex].Value;
-        return value;
+        // Handles infinite-turn logic correctly: If Turns <= 0, always re-enqueues the person
+        if (toReturn.Turns <= 0)
+        {
+            // never removes people with infinite turns
+            _queue.Enqueue(toReturn); 
+        }
+        else
+        {
+            toReturn.Turns--; // =>Decreases turns for regular participants
+            if (toReturn.Turns > 0)
+                _queue.Enqueue(toReturn); // =>Re-enqueues only if they still have turns left...
+        }
+
+        return toReturn.Name;
+    }
+
+    /// <summary>
+    /// Checks if the queue is empty or not.
+    /// </summary>
+    /// <returns>True if the queue has no people, false if contrary</returns>
+    public bool IsEmpty()
+    {
+        return _queue.Count == 0;
     }
 
     public override string ToString()
     {
-        return $"[{string.Join(", ", _queue)}]";
-    }
-}
-
-internal class PriorityItem
-{
-    internal string Value { get; set; }
-    internal int Priority { get; set; }
-
-    internal PriorityItem(string value, int priority)
-    {
-        Value = value;
-        Priority = priority;
-    }
-
-    public override string ToString()
-    {
-        return $"{Value} (Pri:{Priority})";
+        return string.Join(", ", _queue.Select(p => p.ToString())); 
     }
 }
