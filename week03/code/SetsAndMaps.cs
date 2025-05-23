@@ -105,7 +105,48 @@ public static class SetsAndMaps
     public static bool IsAnagram(string word1, string word2)
     {
         // TODO Problem 3 - ADD YOUR CODE HERE
-        return false;
+        // Remove all spaces and convert to lowercase to deal with case sensitivity
+        // Using Replace(" ", "") instead of just Trim(), becau
+        // Trim() didn't work
+        word1 = word1.Replace(" ", "").ToLower();
+        word2 = word2.Replace(" ", "").ToLower();
+
+        // Check if the lengths are different
+        // words with different lengths can't be anagrams
+        if (word1.Length != word2.Length)
+            return false;
+
+        // Count letters in word1 by using a dictionary
+        var letterCount = new Dictionary<char, int>();
+        foreach (var letter in word1)
+        {
+            // TryGetValue() is more efficient than ContainsKey() 
+            // if letter is already in the dictionary, + 1 to the count
+            // if not, add it with a count of 1
+            if (letterCount.TryGetValue(letter, out int count))
+                letterCount[letter] = count + 1;
+            else
+                letterCount[letter] = 1;
+        }
+
+        // Subtract letter counts using word2
+        foreach (var letter in word2)
+        {
+            if (letterCount.TryGetValue(letter, out int count))
+            {
+                letterCount[letter] = count - 1;
+                if (letterCount[letter] < 0)
+                    return false; // More letters in word2 than in word1 (not an anagram)
+            }
+            else
+            {
+                // Letter in word2 not found in word1
+                return false;
+            }
+        }
+
+        // If all counts are zero, it's an anagram
+        return letterCount.Values.All(v => v == 0);
     }
 
     /// <summary>
