@@ -22,7 +22,32 @@ public static class SetsAndMaps
     public static string[] FindPairs(string[] words)
     {
         // TODO Problem 1 - ADD YOUR CODE HERE
-        return [];
+        // Creating a set to store the words 
+        var wordSet = new HashSet<string>(words);
+        var result = new List<string>();
+        // Creating a set to keep track of seen words
+        // This ensures each pair is added only once.
+        var seen = new HashSet<string>();
+
+        foreach (var word in words)
+        {
+            // This part ignores same letter words. It is best practiced to check for duplicates
+            // before adding to the set.
+            if (word[0] == word[1]) // words like "aa" aren't considered...
+
+                continue;
+
+            var reversedWord = new string(new[] { word[1], word[0] });
+
+            // Check for symmetric pair
+            if (wordSet.Contains(reversedWord) && !seen.Contains(reversedWord))
+            {
+                result.Add($"{word} & {reversedWord}");
+                seen.Add(word);
+            }
+        }
+
+        return result.ToArray();
     }
 
     /// <summary>
@@ -43,9 +68,22 @@ public static class SetsAndMaps
         {
             var fields = line.Split(",");
             // TODO Problem 2 - ADD YOUR CODE HERE
-        }
 
-        return degrees;
+            // Check if the line has at least 4 fields
+          if (fields.Length >= 4)
+            {
+                // Get the degree from the 4th column (index 3)
+                var degree = fields[3].Trim();
+                // Check if the degree is in the dictionary
+                // If it is, increment the count
+                // if not, add it with a count of 1  
+                if (degrees.ContainsKey(degree))
+                    degrees[degree]++;
+                else
+                    degrees[degree] = 1;
+            }
+    }
+    return degrees;
     }
 
     /// <summary>
