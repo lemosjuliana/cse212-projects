@@ -170,16 +170,43 @@ public static class SetsAndMaps
         using var getRequestMessage = new HttpRequestMessage(HttpMethod.Get, uri);
         using var jsonStream = client.Send(getRequestMessage).Content.ReadAsStream();
         using var reader = new StreamReader(jsonStream);
-        var json = reader.ReadToEnd();
+        var json = reader.ReadToEnd(); 
+
+        // debbuging...
+        //Console.WriteLine("JSON Response:");
+        //Console.WriteLine(json);
+
         var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
         var featureCollection = JsonSerializer.Deserialize<FeatureCollection>(json, options);
+
+        // Validating the data and error handling - ensuring the data is not null
+        if (featureCollection?.Features == null || featureCollection.Features.Count == 0) 
+        {
+            Console.WriteLine("No earthquake data found.");
+            return Array.Empty<string>(); // Return an empty array to avoid errors
+        }
+
+        // debugging... Print how many earthquakes were found 
+        // Console.WriteLine($"Total earthquakes received: {featureCollection.Features.Count}");
 
         // TODO Problem 5:
         // 1. Add code in FeatureCollection.cs to describe the JSON using classes and properties 
         // on those classes so that the call to Deserialize above works properly.
         // 2. Add code below to create a string out each place a earthquake has happened today and its magitude.
         // 3. Return an array of these string descriptions.
-        return [];
+
+        // extract earthquake data and format the output
+        var summaries = new List<string>();
+
+        foreach (var feature in featureCollection.Features)
+        {
+            if (feature.Properties?.Place != null && feature.Properties?.Mag != null)
+            {
+                summaries.Add($"{feature.Properties.Place} - Mag {feature.Properties.Mag:F2}"); 
+            }
+        }
+
+return summaries.ToArray(); // Convert list to an array and return it
     }
 }
