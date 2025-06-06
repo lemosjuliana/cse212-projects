@@ -110,8 +110,21 @@ public static class Recursion
     /// 'remember' has already been added as an input parameter to 
     /// the function for you to complete this task.
     /// </summary>
+
+    //the problem already gives me the base case and the smaller problem, 
+    // and by just running the function as it is, it would work (in theory).
+    // However, when I ran the tests, I noticed the problem is that is not efficient right now, 
+    // and propably recalculates values multiple times,so I can use memoization to fix it.
+
+    // Beyond that, I have to make sure I am calling the recursive function correctly.
     public static decimal CountWaysToClimb(int s, Dictionary<int, decimal>? remember = null)
     {
+        // Using memoization by storing the results on a dictionary
+        if (remember == null)
+        {
+            remember = new Dictionary<int, decimal>();
+        }
+
         // Base Cases
         if (s == 0)
             return 0;
@@ -123,9 +136,15 @@ public static class Recursion
             return 4;
 
         // TODO Start Problem 3
-
-        // Solve using recursion
-        decimal ways = CountWaysToClimb(s - 1) + CountWaysToClimb(s - 2) + CountWaysToClimb(s - 3);
+        // If the result was already computed, return
+        if (remember.ContainsKey(s))
+        {
+            return remember[s];
+        }
+        // Solve using recursion and I will also pass remember to reduce even more the execution time
+        // and store results correctly.
+        decimal ways = CountWaysToClimb(s - 1, remember) + CountWaysToClimb(s - 2, remember) + CountWaysToClimb(s - 3, remember);
+        remember[s] = ways; // store the computed result
         return ways;
     }
 
