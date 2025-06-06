@@ -10,12 +10,16 @@ public static class Recursion
     /// and return it.  Remember to both express the solution 
     /// in terms of recursive call on a smaller problem and 
     /// to identify a base case (terminating case).  If the value of
-    /// n <= 0, just return 0.   A loop should not be used.
+    /// n <= 0, just return 0. A loop should not be used.
     /// </summary>
     public static int SumSquaresRecursive(int n)
     {
         // TODO Start Problem 1
-        return 0;
+        // Smaller problem: n^2 + SumSquaresRecursive(n - 1)
+        // Base case: if n <= 0, return 0
+        if (n <= 0)
+            return 0; // to stop recursion
+        return n * n + SumSquaresRecursive(n - 1);    
     }
 
     /// <summary>
@@ -40,6 +44,28 @@ public static class Recursion
     public static void PermutationsChoose(List<string> results, string letters, int size, string word = "")
     {
         // TODO Start Problem 2
+        // Smaller problem: PermutationsChoose(results, letters, size - 1, word + letter)
+        // Base case: if size is 0, add the word to results
+
+        // We can write this function more efficiently (by tracking which letters have been used), 
+        // but sincethis version passed the tests, I'll stck with this one..
+
+        if (size == 0) // to stop recursion
+        {
+            results.Add(word); // Store permutations of length size in results
+            return;
+        }
+        // Loop throgh each letter
+        // add letter to word
+        // remove letter from remainingLetters
+        // call itself recursively with size -1 to reduce the problem size until base case..
+        for (int i = 0; i < letters.Length; i++)
+        {
+            char letter = letters[i];
+            string remainingLetters = letters.Substring(0, i) + letters.Substring(i + 1);
+
+            PermutationsChoose(results, remainingLetters, size - 1, word + letter);
+        }
     }
 
     /// <summary>
