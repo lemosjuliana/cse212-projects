@@ -161,9 +161,32 @@ public static class Recursion
     /// Using recursion, insert all possible binary strings for a given pattern into the results list.  You might find 
     /// some of the string functions like IndexOf and [..X] / [X..] to be useful in solving this problem.
     /// </summary>
+
+    // Each * doubles the possibilities
     public static void WildcardBinary(string pattern, List<string> results)
     {
         // TODO Start Problem 4
+
+        // Small problem: we have to replace the first * with 0. Then, replace it with 1, and recurse.
+        // Base case: if we have no *, add the pattern to results,
+
+        // using IndexOf to find the first *
+        int index = pattern.IndexOf('*');
+        if (index == -1) // my base case. I used  index == -1 because it means the pattern doesn have *.
+        {
+            results.Add(pattern);
+            return;
+        }
+        else
+        {
+            // replace the first * with 0. Then, replace it with 1, and recurse.
+            // I didnt use range expressions on this one because the function passed the tests and I personally find 
+            // this way easier to read.
+            WildcardBinary(pattern.Substring(0, index) + "0" + pattern.Substring(index + 1), results);
+            WildcardBinary(pattern.Substring(0, index) + "1" + pattern.Substring(index + 1), results);
+        }
+
+
     }
 
     /// <summary>
