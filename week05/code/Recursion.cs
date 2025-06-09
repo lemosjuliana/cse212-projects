@@ -195,17 +195,41 @@ public static class Recursion
     /// </summary>
     public static void SolveMaze(List<string> results, Maze maze, int x = 0, int y = 0, List<ValueTuple<int, int>>? currPath = null)
     {
+        // Smaller problem: We can move one step (up, down, left or right) at a time
+        // Base case: Happens when we find the end of the maze, so we stop recursion.
+        // Following the example of previous assignments, we can also stop recursion if we find an obstacle.
+
         // If this is the first time running the function, then we need
         // to initialize the currPath list.
-        if (currPath == null) {
+        if (currPath == null)
+        {
             currPath = new List<ValueTuple<int, int>>();
         }
-        
-        // currPath.Add((1,2)); // Use this syntax to add to the current path
-
         // TODO Start Problem 5
         // ADD CODE HERE
+        if (!maze.IsValidMove(currPath, x, y)) // This is the base case when we find an obstacle
+        {
+            return;
+        }
 
-        // results.Add(currPath.AsString()); // Use this to add your path to the results array keeping track of complete maze solutions when you find the solution.
+        currPath.Add((x, y)); // Use this syntax to add to the current path
+
+        if (maze.IsEnd(x, y)) // This is the base case when we reach the end of the maze
+        {
+            results.Add(currPath.AsString()); // Use this to add your path to the results array keeping track of complete maze solutions when you find the solution.
+            currPath.RemoveAt(currPath.Count - 1); // Reducing the problem...
+            return;
+        }
+
+        // Moving one step at a time (recurse in all directions)...
+        SolveMaze(results, maze, x + 1, y, currPath); // right
+        SolveMaze(results, maze, x - 1, y, currPath); // left
+        SolveMaze(results, maze, x, y - 1, currPath); // up
+        SolveMaze(results, maze, x, y + 1, currPath); // down
+        
+
+        // Reducing the problem...
+        currPath.RemoveAt(currPath.Count - 1);
+
     }
 }
