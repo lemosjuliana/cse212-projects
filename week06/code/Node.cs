@@ -94,6 +94,22 @@ public class Node
     public int GetHeight()
     {
         // TODO Start Problem 4
-        return 0; // Replace this line with the correct return statement(s)
+
+        // this is also a recursive problem
+        // Base case: If the current node is null, the height is 0.
+
+        // Small problem: Get the height of each side of the tree.
+
+        if (this == null) // Base case. (If the current node is null, the height is 0. )
+        {
+            return 0; // Replace this line with the correct return statement(s)
+        }
+
+        int leftHeight = Left?.GetHeight() ?? 0; // get the height of the left subtree recursively
+        int rightHeight = Right?.GetHeight() ?? 0; // does the same on the right subtree
+
+        return 1 + Math.Max(leftHeight, rightHeight); // take the max and add 1 for the current node..
+         
+       
     }
 }
